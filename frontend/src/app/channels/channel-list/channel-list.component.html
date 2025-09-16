@@ -1,0 +1,9 @@
+<h2>Channels</h2>
+<ul>
+  <li *ngFor="let channel of channels">
+    <input [(ngModel)]="channel.name" />
+    <input [(ngModel)]="channel.description" />
+    <button (click)="updateChannel(channel)">Update</button>
+    <button (click)="deleteChannel(channel.id)">Delete</button>
+  </li>
+</ul>

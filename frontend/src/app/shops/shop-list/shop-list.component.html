@@ -1,0 +1,17 @@
+<h2>Shops</h2>
+
+<div *ngIf="loading">Đang tải danh sách...</div>
+<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+<ul>
+  <li *ngFor="let shop of shops">
+    <input [(ngModel)]="shop.name" />
+    <input [(ngModel)]="shop.description" />
+    <button (click)="updateShop(shop)">Update</button>
+    <button (click)="deleteShop(shop.id)">Delete</button>
+  </li>
+</ul>
+
+<div *ngIf="!loading && shops.length === 0">
+  Không có shop nào.
+</div>

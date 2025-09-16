@@ -1,0 +1,17 @@
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 5px 0;
+}
+
+input {
+  margin-right: 5px;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
