@@ -1,0 +1,4 @@
+postgres:
+teamdb
+team_user
+team_pass
