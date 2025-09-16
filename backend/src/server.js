@@ -2,8 +2,11 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-// DB connection
-const pool = require("./db"); // nếu db.js export = module.exports = pool;
+// Simple DB connection
+const { pool, initTables } = require("./simple-db");
+
+// Initialize tables on startup
+initTables();
 
 // Routes
 const shopsRouter = require("./routes/shops.routes");

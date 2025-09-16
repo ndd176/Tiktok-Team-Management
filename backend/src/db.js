@@ -1,5 +1,5 @@
-import pkg from "pg";
-import dotenv from "dotenv";
+const pkg = require("pg");
+const dotenv = require("dotenv");
 const { Client, Pool } = pkg;
 
 dotenv.config();
@@ -96,4 +96,4 @@ async function init() {
 // chạy init khi start
 init();
 
-export default pool;
+module.exports = pool;
