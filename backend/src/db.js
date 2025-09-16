@@ -11,8 +11,8 @@ const {
   DB_HOST = "localhost",
   DB_PORT = 5432,
   DB_NAME = "teamdb",
-  DB_ADMIN_USER = "postgres",     // 👈 thêm biến admin vào .env
-  DB_ADMIN_PASS = "postgres"      // 👈 thêm biến admin vào .env
+  DB_ADMIN_USER = "postgres", // 👈 thêm biến admin vào .env
+  DB_ADMIN_PASS = "postgres", // 👈 thêm biến admin vào .env
 } = process.env;
 
 // Client admin để tạo DB/User

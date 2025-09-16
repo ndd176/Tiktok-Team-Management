@@ -1,25 +1,25 @@
 // Simple database initialization script
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Pool } = require("pg");
+require("dotenv").config();
 
 // Tạo pool connection trực tiếp với database chính
 const pool = new Pool({
-  user: process.env.DB_USER || 'team_user',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'teamdb',
-  password: process.env.DB_PASS || 'team_pass',
+  user: process.env.DB_USER || "team_user",
+  host: process.env.DB_HOST || "localhost",
+  database: process.env.DB_NAME || "teamdb",
+  password: process.env.DB_PASS || "team_pass",
   port: process.env.DB_PORT || 5432,
 });
 
 async function initTables() {
   try {
-    console.log('🔧 Creating tables...');
-    
+    console.log("🔧 Creating tables...");
+
     // Drop tables if they exist to recreate with correct structure
-    await pool.query('DROP TABLE IF EXISTS users CASCADE');
-    await pool.query('DROP TABLE IF EXISTS shops CASCADE');
-    await pool.query('DROP TABLE IF EXISTS channels CASCADE');
-    
+    await pool.query("DROP TABLE IF EXISTS users CASCADE");
+    await pool.query("DROP TABLE IF EXISTS shops CASCADE");
+    await pool.query("DROP TABLE IF EXISTS channels CASCADE");
+
     // Tạo bảng users
     await pool.query(`
       CREATE TABLE users (
@@ -50,8 +50,8 @@ async function initTables() {
       );
     `);
 
-    console.log('✅ Tables created successfully!');
-    
+    console.log("✅ Tables created successfully!");
+
     // Thêm dữ liệu mẫu
     await pool.query(`
       INSERT INTO users (name, email) VALUES 
@@ -61,7 +61,7 @@ async function initTables() {
       ('Alice Brown', 'alice@example.com'),
       ('Charlie Wilson', 'charlie@example.com')
     `);
-    
+
     await pool.query(`
       INSERT INTO shops (name, description) VALUES 
       ('Tech Store', 'Electronics and gadgets for technology enthusiasts'),
@@ -70,7 +70,7 @@ async function initTables() {
       ('Health & Wellness', 'Health supplements and wellness products'),
       ('Home Decor', 'Beautiful home decoration items and furniture')
     `);
-    
+
     await pool.query(`
       INSERT INTO channels (name, description) VALUES 
       ('Main Channel', 'Primary content channel for general audience'),
@@ -79,12 +79,13 @@ async function initTables() {
       ('Tech Reviews', 'Technology product reviews and tutorials'),
       ('Food & Cooking', 'Cooking recipes and food-related content')
     `);
-    
-    console.log('✅ Sample data inserted successfully!');
-    
+
+    console.log("✅ Sample data inserted successfully!");
   } catch (err) {
-    console.error('❌ Database Error:', err.message);
-    console.log('💡 Make sure PostgreSQL is running and database credentials are correct');
+    console.error("❌ Database Error:", err.message);
+    console.log(
+      "💡 Make sure PostgreSQL is running and database credentials are correct"
+    );
   }
 }
 
