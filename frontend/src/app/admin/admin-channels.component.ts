@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ChannelService, Channel } from '../services/channel.service';
 
 @Component({
@@ -87,6 +88,9 @@ import { ChannelService, Channel } from '../services/channel.service';
               </div>
             </div>
             <div class="channel-actions">
+              <button class="btn-view" (click)="viewChannel(channel)" title="View Details">
+                👁️
+              </button>
               <button class="btn-edit" (click)="editChannel(channel)" title="Edit">
                 ✏️
               </button>
@@ -106,6 +110,58 @@ import { ChannelService, Channel } from '../services/channel.service';
         <div class="loading-state" *ngIf="loading">
           <div class="spinner"></div>
           <p>Loading channels...</p>
+        </div>
+      </div>
+
+      <!-- Channel Detail Modal -->
+      <div class="modal-overlay" *ngIf="showDetail" (click)="closeDetail()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>📺 Channel Details</h2>
+            <button class="btn-close" (click)="closeDetail()">✕</button>
+          </div>
+          <div class="modal-body" *ngIf="selectedChannel">
+            <div class="detail-section">
+              <div class="channel-avatar-large">
+                {{selectedChannel.name.charAt(0).toUpperCase()}}
+              </div>
+              <div class="channel-info">
+                <h3>{{selectedChannel.name}}</h3>
+                <p class="channel-description">{{selectedChannel.description || 'No description'}}</p>
+                <span class="channel-id-badge">ID: {{selectedChannel.id}}</span>
+              </div>
+            </div>
+            
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label>Channel Name</label>
+                <div class="detail-value">{{selectedChannel.name}}</div>
+              </div>
+              <div class="detail-item">
+                <label>Description</label>
+                <div class="detail-value">{{selectedChannel.description || 'No description provided'}}</div>
+              </div>
+              <div class="detail-item">
+                <label>Channel ID</label>
+                <div class="detail-value">{{selectedChannel.id}}</div>
+              </div>
+              <div class="detail-item">
+                <label>Channel Status</label>
+                <div class="detail-value">
+                  <span class="status-badge active">Active</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="modal-actions">
+              <button class="btn-edit" (click)="editChannel(selectedChannel)">
+                ✏️ Edit Channel
+              </button>
+              <button class="btn-delete" (click)="deleteChannel(selectedChannel.id)">
+                🗑️ Delete Channel
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -357,7 +413,7 @@ import { ChannelService, Channel } from '../services/channel.service';
       gap: 0.5rem;
     }
 
-    .btn-edit, .btn-delete {
+    .btn-edit, .btn-delete, .btn-view {
       background: none;
       border: none;
       padding: 0.5rem;
@@ -365,6 +421,10 @@ import { ChannelService, Channel } from '../services/channel.service';
       cursor: pointer;
       font-size: 1.1rem;
       transition: all 0.3s ease;
+    }
+
+    .btn-view:hover {
+      background: #e0f2fe;
     }
 
     .btn-edit:hover {
@@ -406,6 +466,192 @@ import { ChannelService, Channel } from '../services/channel.service';
       100% { transform: rotate(360deg); }
     }
 
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: #1e293b;
+      font-size: 1.5rem;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-close:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    .detail-section {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .channel-avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 2rem;
+    }
+
+    .channel-info h3 {
+      margin: 0 0 0.5rem 0;
+      color: #1e293b;
+      font-size: 1.5rem;
+    }
+
+    .channel-description {
+      margin: 0 0 0.5rem 0;
+      color: #64748b;
+      font-size: 1rem;
+    }
+
+    .channel-id-badge {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .detail-item label {
+      display: block;
+      color: #374151;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .detail-value {
+      color: #1e293b;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .status-badge.active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .modal-actions .btn-edit,
+    .modal-actions .btn-delete {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-actions .btn-edit {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fbbf24;
+    }
+
+    .modal-actions .btn-edit:hover {
+      background: #fbbf24;
+      color: white;
+    }
+
+    .modal-actions .btn-delete {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #f87171;
+    }
+
+    .modal-actions .btn-delete:hover {
+      background: #dc2626;
+      color: white;
+    }
+
     @media (max-width: 768px) {
       .page-header {
         flex-direction: column;
@@ -430,6 +676,29 @@ import { ChannelService, Channel } from '../services/channel.service';
       .channel-actions {
         align-self: flex-end;
       }
+
+      .modal-content {
+        width: 95%;
+        margin: 1rem;
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+      }
+
+      .detail-section {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+      }
     }
   `]
 })
@@ -438,13 +707,16 @@ export class AdminChannelsComponent implements OnInit {
   filteredChannels: Channel[] = [];
   channelForm: FormGroup;
   showForm = false;
+  showDetail = false;
   editingChannel: Channel | null = null;
+  selectedChannel: Channel | null = null;
   loading = false;
   searchTerm = '';
 
   constructor(
     private channelService: ChannelService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.channelForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -473,15 +745,26 @@ export class AdminChannelsComponent implements OnInit {
 
   toggleForm() {
     this.showForm = !this.showForm;
+    this.showDetail = false;
     if (!this.showForm) {
       this.cancelEdit();
     }
+  }
+
+  viewChannel(channel: Channel) {
+    this.router.navigate(['/admin/channels', channel.id]);
+  }
+
+  closeDetail() {
+    this.showDetail = false;
+    this.selectedChannel = null;
   }
 
   editChannel(channel: Channel) {
     this.editingChannel = channel;
     this.channelForm.patchValue(channel);
     this.showForm = true;
+    this.showDetail = false;
   }
 
   cancelEdit() {
@@ -518,6 +801,9 @@ export class AdminChannelsComponent implements OnInit {
       this.channelService.deleteChannel(id).subscribe({
         next: () => {
           this.loadChannels();
+          if (this.selectedChannel?.id === id) {
+            this.closeDetail();
+          }
         },
         error: (error: any) => {
           console.error('Error deleting channel:', error);
